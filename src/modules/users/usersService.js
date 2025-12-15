@@ -1,70 +1,146 @@
-// Eliminar usuario
-export async function deleteUser(id) {
-  const res = await fetch(`${API_BASE_URL}/users/${id}`, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-  });
-  if (!res.ok) throw new Error('Error al eliminar usuario');
-  return await res.json();
-}
-// Servicio para consumir la API de usuarios
+// Servicio para gestión de usuarios usando Firebase Authentication directamente
+import { auth } from '../../firebaseConfig';
+import { 
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  updateProfile,
+  deleteUser as firebaseDeleteUser
+} from 'firebase/auth';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
-
+// Obtener todos los usuarios de Firebase Auth
+// Nota: Firebase Auth no permite listar usuarios desde el cliente por seguridad
+// Por ahora retornamos una lista simulada basada en el usuario actual
 export async function getUsers(params) {
-  const url = new URL(`${API_BASE_URL}/users`);
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value) url.searchParams.append(key, value);
-    });
+  try {
+    // En un entorno real, necesitarías Firebase Admin SDK en el backend
+    // Por ahora, retornamos el usuario actual si existe
+    const currentUser = auth.currentUser;
+    
+    if (!currentUser) {
+      return { users: [], total: 0 };
+    }
+
+    // Simulamos una respuesta con el usuario actual
+    const users = [{
+      uid: currentUser.uid,
+      email: currentUser.email,
+      displayName: currentUser.displayName || 'Sin nombre',
+      photoURL: currentUser.photoURL,
+      emailVerified: currentUser.emailVerified,
+      disabled: false,
+      status: 'Active', // Estado del usuario
+      createdAt: currentUser.metadata.creationTime,
+      lastLoginAt: currentUser.metadata.lastSignInTime,
+      role: 'admin' // Por defecto asumimos admin
+    }];
+
+    // Retornar en formato compatible con el componente
+    return { users, total: users.length };
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
+    throw new Error('Error al obtener usuarios de Firebase');
   }
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  });
-  if (!res.ok) throw new Error('Error al obtener usuarios');
-  return await res.json();
 }
 
-
+// Crear nuevo usuario
 export async function createUser(data) {
-  const res = await fetch(`${API_BASE_URL}/users`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error('Error al crear usuario');
-  return await res.json();
+  try {
+    const { email, password, displayName, role } = data;
+    
+    // Crear usuario en Firebase Auth
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Actualizar perfil con nombre
+    if (displayName) {
+      await updateProfile(user, { displayName });
+    }
+
+    // Nota: Para asignar custom claims (roles), necesitas Firebase Admin SDK
+    // Esto debería hacerse desde el backend
+
+    return {
+      uid: user.uid,
+      email: user.email,
+      displayName: displayName || '',
+      role: role || 'user',
+      createdAt: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Error al crear usuario:', error);
+    if (error.code === 'auth/email-already-in-use') {
+      throw new Error('El correo electrónico ya está en uso');
+    }
+    if (error.code === 'auth/weak-password') {
+      throw new Error('La contraseña es muy débil');
+    }
+    throw new Error('Error al crear usuario');
+  }
 }
 
+// Actualizar usuario
+export async function updateUser(uid, data) {
+  try {
+    const currentUser = auth.currentUser;
+    
+    if (!currentUser || currentUser.uid !== uid) {
+      throw new Error('No tienes permisos para actualizar este usuario');
+    }
 
-export async function updateUser(id, data) {
-  const res = await fetch(`${API_BASE_URL}/users/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error('Error al actualizar usuario');
-  return await res.json();
+    const { displayName, photoURL } = data;
+    await updateProfile(currentUser, { displayName, photoURL });
+
+    return {
+      uid: currentUser.uid,
+      email: currentUser.email,
+      displayName: currentUser.displayName,
+      photoURL: currentUser.photoURL
+    };
+  } catch (error) {
+    console.error('Error al actualizar usuario:', error);
+    throw new Error('Error al actualizar usuario');
+  }
 }
 
-
-export async function deactivateUser(id) {
-  const res = await fetch(`${API_BASE_URL}/users/${id}/disable`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-  });
-  if (!res.ok) throw new Error('Error al desactivar usuario');
-  return await res.json();
+// Desactivar usuario
+export async function deactivateUser(uid) {
+  try {
+    // Firebase Auth no permite desactivar usuarios desde el cliente
+    // Esto requiere Firebase Admin SDK en el backend
+    throw new Error('Esta operación requiere permisos de administrador en el servidor');
+  } catch (error) {
+    console.error('Error al desactivar usuario:', error);
+    throw error;
+  }
 }
 
+// Resetear contraseña
+export async function resetPassword(email) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return { message: 'Correo de recuperación enviado exitosamente' };
+  } catch (error) {
+    console.error('Error al resetear contraseña:', error);
+    if (error.code === 'auth/user-not-found') {
+      throw new Error('Usuario no encontrado');
+    }
+    throw new Error('Error al enviar correo de recuperación');
+  }
+}
 
-export async function resetPassword(id) {
-  const res = await fetch(`${API_BASE_URL}/users/${id}/reset-password`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-  });
-  if (!res.ok) throw new Error('Error al resetear contraseña');
-  return await res.json();
+// Eliminar usuario
+export async function deleteUser(uid) {
+  try {
+    const currentUser = auth.currentUser;
+    
+    if (!currentUser || currentUser.uid !== uid) {
+      throw new Error('No tienes permisos para eliminar este usuario');
+    }
+
+    await firebaseDeleteUser(currentUser);
+    return { message: 'Usuario eliminado exitosamente' };
+  } catch (error) {
+    console.error('Error al eliminar usuario:', error);
+    throw new Error('Error al eliminar usuario');
+  }
 }

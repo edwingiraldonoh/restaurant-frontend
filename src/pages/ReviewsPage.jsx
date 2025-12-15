@@ -8,7 +8,7 @@ import ReviewCard from '../components/ReviewCard';
  * Página pública que muestra el listado de reseñas aprobadas con paginación.
  *
  * Features:
- * - Fetch de reseñas aprobadas desde GET /reviews
+ * - Fetch de reseñas aprobadas desde API
  * - Paginación con botones Anterior/Siguiente
  * - Estados de carga, error y lista vacía
  * - Responsive grid layout
@@ -35,17 +35,13 @@ const ReviewsPage = () => {
     setError(null);
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/reviews?page=${page}&limit=${limit}`
-      );
-
+      const response = await fetch(`${API_BASE_URL}/reviews?page=${page}&limit=${limit}`);
+      
       if (!response.ok) {
         throw new Error('Error al cargar las reseñas');
       }
 
       const data = await response.json();
-
-  
 
       // El backend responde con { success, data: [...reviews], pagination }
       const reviewsList = Array.isArray(data.data) ? data.data : [];
