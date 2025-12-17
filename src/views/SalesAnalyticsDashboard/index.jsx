@@ -13,18 +13,19 @@ import DataTable from '../../components/analytics/DataTable';
  */
 function SalesAnalyticsDashboard() {
   const { t } = useTranslation();
-  const { data, loading, error, filters, updateFilters, refetch, exportToCSV } = useSalesAnalytics();
+  const { data, loading, error, filters, updateFilters, refetch, exportToXLSX } = useSalesAnalytics();
   const [exportLoading, setExportLoading] = useState(false);
 
   /**
-   * Handler para exportar CSV
+   * Handler para exportar XLSX (Excel)
+   * Implementa US-030: Exportar reportes a XLSX estandarizado
    */
-  const handleExport = async () => {
+  const handleExportXLSX = async () => {
     setExportLoading(true);
     try {
-      await exportToCSV();
-      // Notificación de éxito (puedes integrar con tu sistema de notificaciones)
-      alert(t('analytics.exportSuccess', 'CSV exportado exitosamente'));
+      await exportToXLSX();
+      // Notificación de éxito
+      alert(t('analytics.exportXlsxSuccess', 'XLSX exportado exitosamente'));
     } catch (err) {
       alert(t('analytics.exportError', 'Error al exportar: ') + err.message);
     } finally {
@@ -56,53 +57,19 @@ function SalesAnalyticsDashboard() {
   };
 
   /**
-   * Preparar datos para tabla combinando series y productos
+   * Preparar datos para tabla mostrando productos vendidos
+   * Cada fila muestra un producto con su cantidad e ingresos generados
    */
   const getTableData = () => {
-    if (!data?.series || !data?.productsSold) return [];
+    if (!data?.productsSold || data.productsSold.length === 0) return [];
 
-    // Filtrar periodos por rango seleccionado
-    const fromDate = new Date(filters.from);
-    const toDate = new Date(filters.to);
-
-    const tableRows = [];
-    data.series.forEach(seriesItem => {
-      // El periodo puede ser 'YYYY-MM-DD', 'YYYY-MM', etc. según groupBy
-      let periodDate;
-      if (filters.groupBy === 'day') {
-        periodDate = new Date(seriesItem.period);
-      } else if (filters.groupBy === 'month') {
-        // Parse 'YYYY-MM' as first day of month
-        const [year, month] = seriesItem.period.split('-');
-        periodDate = new Date(Number(year), Number(month) - 1, 1);
-      } else if (filters.groupBy === 'year') {
-        periodDate = new Date(Number(seriesItem.period), 0, 1);
-      } else if (filters.groupBy === 'week') {
-        // Parse 'YYYY-WW' as first day of ISO week
-        const [year, week] = seriesItem.period.split('-');
-        // ISO week: set to first day of week
-        const simple = new Date(Number(year), 0, 1 + (Number(week) - 1) * 7);
-        periodDate = simple;
-      } else {
-        periodDate = new Date(seriesItem.period);
-      }
-
-      if (periodDate >= fromDate && periodDate <= toDate) {
-        data.productsSold.forEach(product => {
-          tableRows.push({
-            period: seriesItem.period,
-            totalOrders: seriesItem.totalOrders,
-            totalRevenue: seriesItem.totalRevenue,
-            productId: product.productId,
-            productName: product.name,
-            quantity: product.quantity,
-            avgPrepTime: seriesItem.avgPrepTime
-          });
-        });
-      }
-    });
-
-    return tableRows;
+    // Crear una fila por cada producto vendido
+    return data.productsSold.map(product => ({
+      period: `${filters.from} - ${filters.to}`,
+      totalRevenue: product.revenue || 0, // Ingresos del producto
+      productName: product.name,
+      quantity: product.quantity
+    }));
   };
 
   return (
@@ -132,7 +99,7 @@ function SalesAnalyticsDashboard() {
               filters={filters}
               onFilterChange={updateFilters}
               onQuery={refetch}
-              onExport={handleExport}
+              onExportXLSX={handleExportXLSX}
               loading={loading || exportLoading}
             />
 
@@ -162,8 +129,8 @@ function SalesAnalyticsDashboard() {
             {/* Data Content */}
             {!loading && !error && data && (
               <>
-                {/* Stats Cards */}
-                <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {/* Stats Cards - Implementa US-031: Ver tiempo de preparación en reportes */}
+                <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
                   <StatCard
                     title={t('analytics.totalOrders', 'Total de órdenes')}
                     value={data.summary?.totalOrders || 0}
@@ -184,6 +151,13 @@ function SalesAnalyticsDashboard() {
                     change={data.summary?.totalProductsSoldChange ?? null}
                     icon="inventory_2"
                     format="number"
+                  />
+                  <StatCard
+                    title={t('analytics.avgPrepTime', 'Tiempo promedio de preparación')}
+                    value={data.summary?.avgPrepTime !== null ? `${data.summary.avgPrepTime} ${t('analytics.minutes', 'min')}` : 'N/A'}
+                    change={null}
+                    icon="schedule"
+                    format="text"
                   />
                   <StatCard
                     title={t('analytics.topProduct', 'Producto destacado')}

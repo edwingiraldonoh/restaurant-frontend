@@ -3,24 +3,27 @@ import { useTranslation } from 'react-i18next';
 import { createUser, getUsers, updateUser, deleteUser } from "./usersService";
 import { useNavigate, useParams } from "react-router-dom";
 import Sidebar from '../../components/analytics/Sidebar';
+import SelectListbox from '../../components/SelectListbox';
+import RoleIcon from '../../components/RoleIcon';
 
-const roles = [
-  { label: "Admin", value: "ADMIN" },
-  { label: "Kitchen", value: "KITCHEN" },
-  { label: "Waiter", value: "WAITER" },
-];
+// Las etiquetas se traducirán dentro del componente usando i18n
 
 const initialState = {
   name: "",
   email: "",
   password: "",
   confirmPassword: "",
-  role: "ADMIN",
+  role: "KITCHEN",
 };
 
 
 const UserForm = () => {
   const { t } = useTranslation();
+    const roles = [
+      { value: "ADMIN", key: "roleadmin", leftIcon: <RoleIcon role="ADMIN" /> },
+      { value: "KITCHEN", key: "rolekitchen", leftIcon: <RoleIcon role="KITCHEN" /> },
+      { value: "WAITER", key: "rolewaiter", leftIcon: <RoleIcon role="WAITER" /> },
+    ];
   const [form, setForm] = useState(initialState);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -111,20 +114,22 @@ const UserForm = () => {
     try {
       if (isEdit) {
         await updateUser(id, {
-          name: form.name,
+          displayName: form.name,
           role: form.role,
         });
         setSuccess(t('users.updateSuccess', 'Usuario actualizado exitosamente.'));
       } else {
         await createUser({
-          name: form.name,
+          displayName: form.name,
           email: form.email,
           password: form.password,
           role: form.role,
         });
         setSuccess(t('users.createSuccess', 'Usuario creado exitosamente.'));
       }
-      setTimeout(() => navigate("/users"), 1200);
+      // Emitir evento para que la lista de usuarios se refresque inmediatamente
+      window.dispatchEvent(new CustomEvent('users:changed'));
+      setTimeout(() => navigate("/users"), 600);
     } catch (err) {
       setError((isEdit ? t('users.updateError', 'Error al actualizar usuario. ') : t('users.createError', 'Error al crear usuario. ')) + (err.message || ""));
     } finally {
@@ -215,17 +220,11 @@ const UserForm = () => {
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2" htmlFor="role">{t('users.roleLabel', 'Rol')}</label>
             <div>
-              <select 
-                className="block w-full rounded-lg border-0 py-3 px-4 text-white bg-slate-800 shadow-sm ring-1 ring-inset ring-slate-700 focus:ring-2 focus:ring-inset focus:ring-primary transition-all cursor-pointer" 
-                id="role" 
-                name="role" 
-                value={form.role} 
-                onChange={handleChange}
-              >
-                {roles.map((r) => (
-                  <option key={r.value} value={r.value}>{r.label}</option>
-                ))}
-              </select>
+              <SelectListbox
+                value={form.role}
+                onChange={(v) => setForm(f => ({ ...f, role: v }))}
+                options={roles.map(r => ({ value: r.value, label: t(`users.${r.key}`, r.key) }))}
+              />
             </div>
           </div>
           {(error || success) && (

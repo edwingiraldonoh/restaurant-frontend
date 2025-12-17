@@ -61,8 +61,8 @@ function OrderStatusPage() {
         onRefresh={refreshFunction}
       />
 
-      {/* Review Modal */}
-      {showReviewModal && orderData && (
+      {/* Review Modal - US-022: Solo habilitado si pedido está ENTREGADO o RECOGIDO */}
+      {showReviewModal && orderData && ['delivered', 'ready'].includes(orderData.status) && (
         <ReviewModal
           key={i18n.language}
           isOpen={showReviewModal}
