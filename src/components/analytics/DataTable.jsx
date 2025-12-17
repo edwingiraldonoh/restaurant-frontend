@@ -37,10 +37,10 @@ function DataTable({ data = [] }) {
   };
 
   return (
-    <div className="mt-8 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/50">
+    <div className="mt-8 overflow-hidden rounded-xl border border-slate-700 bg-slate-900">
       <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-800/50 sticky top-0">
+        <table className="w-full text-sm text-left text-gray-400">
+          <thead className="text-xs text-gray-300 uppercase bg-slate-800 sticky top-0">
             <tr>
               <th className="px-6 py-3" scope="col">
                 <button
@@ -74,7 +74,7 @@ function DataTable({ data = [] }) {
           <tbody>
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan="6" className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan="6" className="px-6 py-8 text-center text-gray-400">
                   {t('analytics.noTableData', 'No data is available for the selected period.')}
                 </td>
               </tr>
@@ -82,9 +82,9 @@ function DataTable({ data = [] }) {
               paginatedData.map((row, index) => (
                 <tr
                   key={index}
-                  className="bg-white dark:bg-background-dark/50 border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                  className="bg-slate-900 border-b border-slate-700 hover:bg-slate-800/50 transition-colors"
                 >
-                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                  <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
                     {row.period || 'N/A'}
                   </td>
                   <td className="px-6 py-4">{row.totalOrders || 0}</td>
@@ -101,10 +101,10 @@ function DataTable({ data = [] }) {
 
       {/* Paginación */}
       <nav aria-label="Table navigation" className="flex items-center justify-between p-4">
-        <div className="text-sm font-normal text-gray-500 dark:text-gray-400 flex items-center gap-2">
+        <div className="text-sm font-normal text-gray-400 flex items-center gap-2">
           {t('analytics.rowsPerPage', 'Rows per page:')}
           <select
-            className="bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-primary focus:border-primary p-1"
+            className="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg focus:ring-primary focus:border-primary p-1"
             value={rowsPerPage}
             onChange={(e) => {
               setRowsPerPage(Number(e.target.value));
@@ -121,7 +121,7 @@ function DataTable({ data = [] }) {
             <button
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white dark:bg-background-dark/50 border border-gray-300 dark:border-gray-700 rounded-l-lg hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 ml-0 leading-tight text-gray-400 bg-slate-800 border border-slate-700 rounded-l-lg hover:bg-slate-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {t('users.previous', 'Previous')}
             </button>
@@ -134,8 +134,8 @@ function DataTable({ data = [] }) {
                   onClick={() => setCurrentPage(page)}
                   className={`px-3 py-2 leading-tight ${
                     currentPage === page
-                      ? 'z-10 text-primary bg-primary/20 border border-primary hover:bg-primary/30'
-                      : 'text-gray-500 bg-white dark:bg-background-dark/50 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'
+                      ? 'z-10 text-primary bg-primary/30 border border-primary hover:bg-primary/40'
+                      : 'text-gray-400 bg-slate-800 border border-slate-700 hover:bg-slate-700 hover:text-white'
                   }`}
                 >
                   {page}
@@ -147,7 +147,7 @@ function DataTable({ data = [] }) {
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-2 leading-tight text-gray-500 bg-white dark:bg-background-dark/50 border border-gray-300 dark:border-gray-700 rounded-r-lg hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 leading-tight text-gray-400 bg-slate-800 border border-slate-700 rounded-r-lg hover:bg-slate-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {t('users.next', 'Next')}
             </button>

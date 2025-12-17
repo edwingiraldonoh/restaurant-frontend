@@ -23,8 +23,8 @@ function Login() {
   };
 
   const handleUnauthorizedAccess = (claims) => {
-    const claimsString = JSON.stringify(claims);
-    setError(`Acceso denegado: no eres administrador. Claims: ${claimsString}`);
+    const role = claims.role ? claims.role.toUpperCase() : 'NO ASIGNADO';
+    setError(`Acceso denegado: Tu rol actual es "${role}". Solo usuarios con rol ADMIN o KITCHEN pueden acceder. Por favor contacta al administrador para que te asigne un rol válido.`);
   };
 
   const handleSuccessfulLogin = (user, tokenResult) => {

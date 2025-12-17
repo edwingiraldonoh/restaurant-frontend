@@ -106,23 +106,23 @@ function SalesAnalyticsDashboard() {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark">
+    <div className="relative flex min-h-screen w-full flex-col bg-slate-950">
       <div className="flex h-full w-full">
 
         {/* Main Content */}
-        <main className="flex-1 p-6 lg:p-8 overflow-auto">
+        <main className="flex-1 p-6 lg:p-8 overflow-auto ml-64">
           <div className="mx-auto max-w-7xl">
             {/* Page Heading */}
             <div className="flex flex-wrap justify-between gap-3 items-center">
               <div className="flex flex-col gap-2">
-                <p className="text-[#111813] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
+                <p className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">
                   {t('analytics.title', 'Dashboard de Analíticas')}
                 </p>
-                <p className="text-[#63886f] dark:text-gray-400 text-base font-normal leading-normal">
+                <p className="text-gray-400 text-base font-normal leading-normal">
                   {t('analytics.subtitle', 'Reportes, métricas y exportaciones para la toma de decisiones.')}
                 </p>
               </div>
-              <span className="inline-flex items-center justify-center rounded-lg h-10 px-4 bg-primary/20 dark:bg-primary/30 text-[#111813] dark:text-white text-sm font-bold leading-normal tracking-[0.015em]">
+              <span className="inline-flex items-center justify-center rounded-lg h-10 px-4 bg-primary/30 text-white text-sm font-bold leading-normal tracking-[0.015em]">
                 {t('analytics.roleLabel', 'Manager / Admin')}
               </span>
             </div>
@@ -138,12 +138,12 @@ function SalesAnalyticsDashboard() {
 
             {/* Error State */}
             {error && (
-              <div className="mt-8 p-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+              <div className="mt-8 p-6 bg-red-900/20 border border-red-800 rounded-xl">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-3xl text-red-500 dark:text-red-400">error</span>
+                  <span className="material-symbols-outlined text-3xl text-red-400">error</span>
                   <div>
-                    <h3 className="text-lg font-bold text-red-700 dark:text-red-400">{t('analytics.errorTitle', 'Error al cargar datos')}</h3>
-                    <p className="text-sm text-red-600 dark:text-red-300 mt-1">{error}</p>
+                    <h3 className="text-lg font-bold text-red-400">{t('analytics.errorTitle', 'Error al cargar datos')}</h3>
+                    <p className="text-sm text-red-300 mt-1">{error}</p>
                   </div>
                 </div>
               </div>
@@ -154,7 +154,7 @@ function SalesAnalyticsDashboard() {
               <div className="mt-8 flex items-center justify-center p-12">
                 <div className="flex flex-col items-center gap-4">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                  <p className="text-gray-500 dark:text-gray-400">{t('analytics.loading', 'Cargando analíticas...')}</p>
+                  <p className="text-gray-400">{t('analytics.loading', 'Cargando analíticas...')}</p>
                 </div>
               </div>
             )}

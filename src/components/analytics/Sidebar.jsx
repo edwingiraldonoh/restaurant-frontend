@@ -38,7 +38,7 @@ function Sidebar() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <aside className="sticky top-0 h-screen w-64 flex-shrink-0 bg-white dark:bg-background-dark/50 p-4 border-r border-gray-200 dark:border-gray-800">
+    <aside className="fixed left-0 top-0 h-screen w-64 flex-shrink-0 bg-slate-900 p-4 border-r border-slate-700 z-40">
       <div className="flex h-full flex-col justify-between">
         <div className="flex flex-col gap-4">
           {/* Logo */}
@@ -47,10 +47,10 @@ function Sidebar() {
               <span className="material-symbols-outlined text-2xl text-white">restaurant</span>
             </div>
             <div className="flex flex-col">
-              <h1 className="text-[#111813] dark:text-white text-base font-medium leading-normal">
+              <h1 className="text-white text-base font-medium leading-normal">
                 {t('sidebar.userManagement')}
               </h1>
-              <p className="text-[#63886f] dark:text-gray-400 text-sm font-normal leading-normal">
+              <p className="text-white text-sm font-normal leading-normal">
                 {t('sidebar.reports')}
               </p>
             </div>
@@ -64,17 +64,17 @@ function Sidebar() {
                 onClick={() => navigate(item.path)}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
                   isActive(item.path)
-                    ? 'bg-primary/20 dark:bg-primary/30 text-primary'
-                    : 'text-[#111813] dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ? 'bg-primary/30'
+                    : 'hover:bg-slate-800'
                 }`}
               >
                 <span
-                  className="material-symbols-outlined text-2xl"
+                  className={`material-symbols-outlined text-2xl ${isActive(item.path) ? 'text-primary' : 'text-white'}`}
                   style={{ fontVariationSettings: item.filled && isActive(item.path) ? "'FILL' 1" : "'FILL' 0" }}
                 >
                   {item.icon}
                 </span>
-                <p className={`text-sm font-medium leading-normal ${isActive(item.path) ? 'text-[#111813] dark:text-white' : ''}`}>
+                <p className={`text-sm font-medium leading-normal ${isActive(item.path) ? 'text-primary' : 'text-white'}`}>
                   {item.label}
                 </p>
               </button>
@@ -88,8 +88,8 @@ function Sidebar() {
           <div className="flex items-center ">
          
           </div>
-          <button className="flex items-center gap-3 px-3 py-2 text-[#111813] dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all">
-               <span className="material-symbols-outlined text-2xl">language</span>
+          <button className="flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-lg transition-all">
+               <span className="material-symbols-outlined text-2xl text-white">language</span>
             <select
               value={i18n.language}
               onChange={handleLanguageChange}
@@ -101,10 +101,10 @@ function Sidebar() {
           </button>
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-3 px-3 py-2 text-[#111813] dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
+            className="flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-lg transition-all"
           >
-            <span className="material-symbols-outlined text-2xl">logout</span>
-            <p className="text-sm font-medium leading-normal">Logout</p>
+            <span className="material-symbols-outlined text-2xl text-white">logout</span>
+            <p className="text-sm font-medium leading-normal text-white">Logout</p>
           </button>
         </div>
       </div>

@@ -12,7 +12,7 @@ function FilterToolbar({ filters, onFilterChange, onQuery, onExport, loading }) 
   };
 
   return (
-    <div className="mt-8 flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/50">
+    <div className="mt-8 flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl border border-slate-700 bg-slate-900">
       <div className="flex flex-wrap gap-4 items-center">
         {/* From Date */}
         <div className="relative">
@@ -60,7 +60,7 @@ function FilterToolbar({ filters, onFilterChange, onQuery, onExport, loading }) 
             {t('analytics.groupBy', 'Group by')}
           </label>
           <select
-            className="w-full mt-1 pl-3 pr-10 py-2 bg-background-light dark:bg-background-dark border border-gray-300 dark:border-gray-700 rounded-md text-sm text-[#111813] dark:text-white focus:ring-primary focus:border-primary"
+            className="w-full mt-1 pl-3 pr-10 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm text-white focus:ring-primary focus:border-primary"
             id="group-by"
             value={filters.groupBy}
             onChange={(e) => handleInputChange('groupBy', e.target.value)}
@@ -78,7 +78,7 @@ function FilterToolbar({ filters, onFilterChange, onQuery, onExport, loading }) 
         <button
           onClick={onExport}
           disabled={loading}
-          className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-transparent text-[#111813] dark:text-white border border-gray-300 dark:border-gray-700 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-4 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-transparent text-white border border-slate-700 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           <span className="material-symbols-outlined text-xl">ios_share</span>
           <span className="truncate">{t('analytics.exportCsv', 'Export CSV')}</span>
@@ -86,8 +86,8 @@ function FilterToolbar({ filters, onFilterChange, onQuery, onExport, loading }) 
         <button
           onClick={onQuery}
           disabled={loading}
-          className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-primary text-black gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-4 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-        >
+          className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-primary text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-4 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+        
           <span className="material-symbols-outlined text-xl">query_stats</span>
           <span className="truncate">{loading ? t('analytics.loading', 'Loading analytics...') : t('analytics.viewMetrics', 'View metrics')}</span>
         </button>

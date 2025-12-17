@@ -21,7 +21,7 @@ function KitchenFilters({ filter, onFilterChange }) {
           className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base font-medium transition-colors ${
             filter === filterOption.value
               ? 'bg-primary text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-100'
+              : 'bg-slate-800 text-gray-300 hover:bg-slate-700'
           }`}
         >
           {filterOption.label}
