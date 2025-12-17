@@ -13,7 +13,7 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const handleLanguageChange = (e) => {
     i18n.changeLanguage(e.target.value);
     // Forzar re-render de la página actual para que el contenido cambie de idioma inmediatamente
@@ -100,7 +100,10 @@ function Sidebar() {
             </select>
           </button>
           <button
-            onClick={() => navigate('/')}
+            onClick={async () => {
+              await logout();
+              navigate('/login');
+            }}
             className="flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-lg transition-all"
           >
             <span className="material-symbols-outlined text-2xl text-white">logout</span>

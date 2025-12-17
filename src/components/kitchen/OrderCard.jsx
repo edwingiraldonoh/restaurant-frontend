@@ -67,6 +67,35 @@ function OrderCard({ order, isProcessing, onStartPreparing, onMarkAsReady }) {
         </ul>
       </div>
 
+      {/* Notas del pedido - US-003 Criterio 3 */}
+      {order.notes && (
+        <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg flex-shrink-0">
+          <div className="flex items-start gap-2">
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+            <div className="flex-1 min-w-0">
+              <p className="text-yellow-500 text-xs font-semibold mb-1">
+                {t('kitchen.orderNotes', 'Notas del pedido')}:
+              </p>
+              <p className="text-yellow-100 text-xs sm:text-sm break-words">
+                {order.notes}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Total Price */}
       {order.items && order.items.length > 0 && (
         <div className="mb-3 sm:mb-4 pt-2 border-t border-slate-700 flex-shrink-0">
@@ -115,6 +144,15 @@ function OrderCard({ order, isProcessing, onStartPreparing, onMarkAsReady }) {
             className="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-700 text-gray-400 rounded-lg text-xs sm:text-sm font-medium cursor-not-allowed whitespace-nowrap"
           >
             {t('kitchen.completed')}
+          </button>
+        )}
+
+        {order.status === 'CANCELLED' && (
+          <button
+            disabled
+            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-700 text-red-400 rounded-lg text-xs sm:text-sm font-medium cursor-not-allowed whitespace-nowrap"
+          >
+            {t('kitchen.statusCancelled')}
           </button>
         )}
       </div>

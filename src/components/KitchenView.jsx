@@ -21,7 +21,7 @@ function KitchenView() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useState('RECEIVED'); // Por defecto mostrar solo pedidos pendientes (US-006)
   const [processing, setProcessing] = useState(new Set());
 
   // Estado para modal de nuevo pedido
@@ -71,8 +71,22 @@ function KitchenView() {
       const orderNum = notification.orderNumber || notification.orderId || 'N/A';
       setNewOrderNumber(orderNum);
       setNewOrderModal(true);
+      // Refrescar lista para mostrar el nuevo pedido
+      loadOrders();
     }
-  }, []);
+    
+    // order.updated - Pedido actualizado (preparando, listo)
+    if (notification.eventType === 'order.updated') {
+      console.log('🔄 Order updated, refreshing list...');
+      loadOrders();
+    }
+    
+    // order.cancelled - Pedido cancelado
+    if (notification.eventType === 'order.cancelled') {
+      console.log('🚫 Order cancelled, refreshing list...');
+      loadOrders();
+    }
+  }, [loadOrders]);
 
   // Conectar a notificaciones (sin filtro de orderId, todas las notificaciones)
   useNotifications(handleNotification, []);

@@ -1,11 +1,12 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { getOrderStatus, cancelOrder } from '../services/api';
+import { getOrderStatus, cancelOrder, updateOrder } from '../services/api';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../hooks/useNotification';
 import NotificationModal from './NotificationModal';
 import OrderCancelModal from './OrderCancelModal';
+import EditOrderModal from './EditOrderModal';
 
 /**
  * Componente para mostrar el estado de un pedido específico
@@ -27,12 +28,16 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
   const [cancelModal, setCancelModal] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelError, setCancelError] = useState('');
+  // Estados para editar pedido
+  const [editModal, setEditModal] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   // --- Efectos de logging para debug ---
   useEffect(() => {
-
+    console.log('🎯 preparingModal changed to:', preparingModal);
   }, [preparingModal]);
   useEffect(() => {
+    console.log('🎯 readyModal changed to:', readyModal);
   }, [readyModal]);
 
   // --- Lógica de obtención de pedido ---
@@ -73,24 +78,42 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
 
   const handleNotification = useCallback(
     (notification) => {
-      if (!isNotificationForOrder(notification)) return;
+      console.log('📬 Notification received:', notification);
+      console.log('🔍 Current orderId:', orderId);
+      console.log('🔍 Current order:', order);
+      
+      if (!isNotificationForOrder(notification)) {
+        console.log('⏭️ Notification not for this order, skipping...');
+        return;
+      }
+      
+      console.log('✅ Notification matches this order!', notification.eventType);
+      
       switch (notification.eventType) {
         case 'order.preparing':
+          console.log('🍳 Setting preparing modal to TRUE');
           setPreparingModal(true);
           fetchOrderStatus();
           break;
         case 'order.ready':
+          console.log('✅ Setting ready modal to TRUE');
           setReadyModal(true);
           fetchOrderStatus();
           break;
+        case 'order.updated':
+          console.log('🔄 Order updated via SSE, refreshing...');
+          fetchOrderStatus();
+          break;
         case 'order.cancelled':
+          console.log('❌ Order cancelled, refreshing...');
           fetchOrderStatus();
           break;
         default:
+          console.log('❓ Unknown event type:', notification.eventType);
           break;
       }
     },
-    [isNotificationForOrder, fetchOrderStatus]
+    [isNotificationForOrder, fetchOrderStatus, orderId, order]
   );
   useNotifications(handleNotification, []);
 
@@ -111,6 +134,21 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
       setIsCancelling(false);
     }
   }, [orderId, navigate, t]);
+
+  const handleUpdateOrder = useCallback(async (updateData) => {
+    setIsUpdating(true);
+    try {
+      const updatedOrder = await updateOrder(orderId, updateData);
+      setOrder(updatedOrder);
+      setEditModal(false);
+      // Refrescar datos del pedido
+      await fetchOrderStatus();
+    } catch (err) {
+      alert(err.message || t('orderStatus.errorUpdating', 'Error al actualizar el pedido'));
+    } finally {
+      setIsUpdating(false);
+    }
+  }, [orderId, fetchOrderStatus, t]);
 
   const handleAcceptPreparing = useCallback(() => setPreparingModal(false), []);
   const handlePickUpOrder = useCallback(() => setReadyModal(false), []);
@@ -133,7 +171,7 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
   // --- Memoización de datos derivados ---
   const displayOrderId = useMemo(() => order?.orderNumber || order?.orderId || order?._id || 'N/A', [order]);
   const customerName = useMemo(() => order?.customerName || order?.customer || 'Customer', [order]);
-  const isBeingPrepared = useMemo(() => ['cooking', 'ready', 'delivered'].includes(order?.status), [order]);
+  const isBeingPrepared = useMemo(() => ['preparing', 'ready', 'delivered'].includes(order?.status), [order]);
   const isReadyForPickup = useMemo(() => ['ready', 'delivered'].includes(order?.status), [order]);
   const isCancelled = order?.status === 'cancelled';
 
@@ -208,7 +246,7 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
             <div className="flex flex-col items-center gap-2 text-center">
               <div className={`relative flex h-10 w-10 items-center justify-center rounded-full ${isBeingPrepared ? 'bg-primary text-white' : 'bg-slate-700 text-gray-400'}`}>
                 <span className="material-symbols-outlined">{isReadyForPickup ? 'check' : 'soup_kitchen'}</span>
-                {(order.status === 'cooking' || order.status === 'preparing') && (
+                {order.status === 'preparing' && (
                   <div className="absolute h-full w-full animate-ping rounded-full bg-primary opacity-50"></div>
                 )}
               </div>
@@ -269,12 +307,20 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
         </div>
       )}
 
-      {/* Botón Cancelar Pedido - Solo si está pending */}
+      {/* Botones de acción - Solo si está pending */}
       {order.status === 'pending' && !isCancelled && (
-        <div className="mt-6 flex justify-center">
+        <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+          <button
+            onClick={() => setEditModal(true)}
+            disabled={isUpdating || isCancelling}
+            className="px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined text-xl">edit</span>
+            {t('orderStatus.modifyOrder')}
+          </button>
           <button
             onClick={() => setCancelModal(true)}
-            disabled={isCancelling}
+            disabled={isCancelling || isUpdating}
             className="px-6 py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
             {isCancelling ? t('orderStatus.cancelling') : t('orderStatus.cancelOrder')}
@@ -282,16 +328,51 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
         </div>
       )}
 
-      {/* Mensaje informativo para otros estados */}
-      {order.status !== 'pending' && !isCancelled && (
-        <div className="mt-6 flex justify-center">
-          <p className="text-sm text-gray-400">
-            {order.status === 'cooking' ? t('orderStatus.infoPreparing') : ''}
-            {order.status === 'ready' ? t('orderStatus.infoReady') : ''}
-            {order.status === 'delivered' ? t('orderStatus.infoDelivered') : ''}
-          </p>
+      {/* Alerta cuando está en preparación - botones deshabilitados */}
+      {(order.status === 'preparing' || order.status === 'cooking') && !isCancelled && (
+        <div className="mt-6 bg-orange-900/20 border border-orange-800 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <span className="material-symbols-outlined text-orange-400 text-3xl">soup_kitchen</span>
+            <div className="flex-1">
+              <h4 className="text-orange-300 font-semibold text-lg mb-1">
+                {t('orderStatus.preparingTitle')}
+              </h4>
+              <p className="text-orange-200 text-sm">
+                {t('orderStatus.infoPreparing')}
+              </p>
+              <p className="text-orange-400 text-xs mt-2 italic">
+                {t('orderStatus.cannotModifyPreparing')}
+              </p>
+            </div>
+          </div>
         </div>
       )}
+
+      {/* Mensaje informativo para estado listo */}
+      {order.status === 'ready' && !isCancelled && (
+        <div className="mt-6 bg-green-900/20 border border-green-800 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <span className="material-symbols-outlined text-green-400 text-3xl">shopping_bag</span>
+            <div className="flex-1">
+              <h4 className="text-green-300 font-semibold text-lg mb-1">
+                {t('orderStatus.readyTitle')}
+              </h4>
+              <p className="text-green-200 text-sm">
+                {t('orderStatus.infoReady')}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de edición de pedido */}
+      <EditOrderModal
+        isOpen={editModal}
+        order={order}
+        onClose={() => setEditModal(false)}
+        onSave={handleUpdateOrder}
+        isSaving={isUpdating}
+      />
 
       {/* Modal de confirmación de cancelación */}
       <OrderCancelModal
