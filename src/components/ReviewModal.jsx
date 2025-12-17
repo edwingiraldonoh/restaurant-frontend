@@ -69,13 +69,12 @@ export default function ReviewModal({
 
       const reviewData = {
         orderId: orderData.orderId,
-        customerName: orderData.customerName || orderData.customer,
-        customerEmail: orderData.customerEmail || 'customer@example.com',
-        ratings,
+        userName: orderData.customerName || orderData.customer || 'Anonymous',
+        userEmail: orderData.customerEmail || 'customer@example.com',
+        rating: ratings.overall,
+        foodQuality: ratings.food,
         comment: comment.trim()
       };
-
-
 
       const response = await fetch(`${API_BASE_URL}/reviews`, {
         method: 'POST',

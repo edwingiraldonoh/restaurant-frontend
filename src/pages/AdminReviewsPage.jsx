@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
  * Panel de administración para gestionar reseñas (aprobar/ocultar).
  *
  * Features:
- * - Fetch de todas las reseñas (pending/approved/hidden) desde GET /admin/reviews
+ * - Fetch de todas las reseñas (pending/approved/hidden)
  * - Acciones de moderación: Aprobar y Ocultar
  * - Modal de confirmación para acciones
  * - Badges de estado con colores semánticos
@@ -45,7 +45,7 @@ const AdminReviewsPage = () => {
 
     try {
       const response = await fetch(`${API_BASE_URL}/reviews/admin/reviews`);
-
+      
       if (!response.ok) {
         throw new Error('Error al cargar las reseñas');
       }
