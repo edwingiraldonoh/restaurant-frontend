@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
-import { deactivateUser } from "./usersService";
+import { deactivateUser, activateUser } from "./usersService";
 
 import DefaultUserAvatar from "./DefaultUserAvatar";
 import SelectListbox from '../../components/SelectListbox';
@@ -27,6 +27,9 @@ const UserManagement = () => {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [userToDeactivate, setUserToDeactivate] = useState(null);
   const [deactivating, setDeactivating] = useState(false);
+  const [showActivateModal, setShowActivateModal] = useState(false);
+  const [userToActivate, setUserToActivate] = useState(null);
+  const [activating, setActivating] = useState(false);
   const [roleFilter, setRoleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   // TODO: agregar filtros y paginación real
@@ -224,7 +227,7 @@ const UserManagement = () => {
                             </td>
                             <td className="px-6 py-4 text-sm font-medium">
                               <div className="flex items-center gap-2">
-                                {String(user.status || '').toLowerCase() !== 'desactivado' && (
+                                {!user.disabled && String(user.status || '').toLowerCase() !== 'desactivado' ? (
                                   <>
                                     <button
                                       className="p-2 rounded-md hover:bg-slate-800 transition-colors"
@@ -241,9 +244,20 @@ const UserManagement = () => {
                                       }}
                                       title="Desactivar usuario"
                                     >
-                                      <span className="material-symbols-outlined text-lg text-white hover:text-red-500">delete</span>
+                                      <span className="material-symbols-outlined text-lg text-white hover:text-red-500">block</span>
                                     </button>
                                   </>
+                                ) : (
+                                  <button
+                                    className="p-2 rounded-md hover:bg-green-900/20 transition-colors"
+                                    onClick={() => {
+                                      setUserToActivate(user);
+                                      setShowActivateModal(true);
+                                    }}
+                                    title="Activar usuario"
+                                  >
+                                    <span className="material-symbols-outlined text-lg text-white hover:text-green-500">check_circle</span>
+                                  </button>
                                 )}
                               </div>
                             </td>
@@ -305,7 +319,7 @@ const UserManagement = () => {
                     setDeactivating(true);
                     try {
                       await deactivateUser(userToDeactivate.id || userToDeactivate.uid);
-                      setUsers(users => users.map(u => (u.id === userToDeactivate.id || u.uid === userToDeactivate.uid) ? { ...u, status: 'Inactive' } : u));
+                      setUsers(users => users.map(u => (u.id === userToDeactivate.id || u.uid === userToDeactivate.uid) ? { ...u, status: 'Inactive', disabled: true } : u));
                       setShowDeactivateModal(false);
                       setUserToDeactivate(null);
                     } catch (err) {
@@ -316,6 +330,42 @@ const UserManagement = () => {
                   }}
                   disabled={deactivating}
                 >{deactivating ? t('users.deactivating', 'Desactivando...') : t('users.deactivateButton', 'Confirmar')}</button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Modal de confirmación de activación */}
+        {showActivateModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-slate-900 rounded-lg shadow-xl p-8 w-full max-w-md">
+              <h2 className="text-xl font-bold mb-4 text-white">{t('users.activateTitle', '¿Activar usuario?')}</h2>
+              <p className="mb-6 text-gray-400">{t('users.activateConfirm', '¿Estás seguro de que deseas activar a')} <span className="font-semibold">{userToActivate?.displayName || userToActivate?.name || userToActivate?.email}</span>? {t('users.activateWarning', 'El usuario podrá acceder al sistema nuevamente.')}</p>
+              <div className="flex justify-end gap-4">
+                <button
+                  className="px-4 py-2 rounded-md bg-slate-700 text-white font-medium hover:bg-slate-600"
+                  onClick={() => {
+                    setShowActivateModal(false);
+                    setUserToActivate(null);
+                  }}
+                  disabled={activating}
+                >{t('users.activateCancel', 'Cancelar')}</button>
+                <button
+                  className="px-4 py-2 rounded-md bg-green-600 text-white font-bold hover:bg-green-700"
+                  onClick={async () => {
+                    setActivating(true);
+                    try {
+                      await activateUser(userToActivate.id || userToActivate.uid);
+                      setUsers(users => users.map(u => (u.id === userToActivate.id || u.uid === userToActivate.uid) ? { ...u, status: 'Active', disabled: false } : u));
+                      setShowActivateModal(false);
+                      setUserToActivate(null);
+                    } catch (err) {
+                      alert(t('users.activateError', 'Error al activar usuario'));
+                    } finally {
+                      setActivating(false);
+                    }
+                  }}
+                  disabled={activating}
+                >{activating ? t('users.activating', 'Activando...') : t('users.activateButton', 'Confirmar')}</button>
               </div>
             </div>
           </div>

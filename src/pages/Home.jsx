@@ -61,15 +61,13 @@ function Home() {
                     options={[{ value: 'en', label: 'English' }, { value: 'es', label: 'Español' }]}
                   />
                 </div>
-                {isAdmin && (
-                  <button
-                    onClick={handleDashboardAccess}
-                    className="bg-slate-700 text-white p-2.5 rounded-lg hover:bg-slate-600 transition-all flex items-center justify-center"
-                    title="Dashboard de Administración"
-                  >
-                    <span className="material-symbols-outlined text-[24px]">settings</span>
-                  </button>
-                )}
+                <button
+                  onClick={handleDashboardAccess}
+                  className="bg-slate-700 text-white p-2.5 rounded-lg hover:bg-slate-600 transition-all flex items-center justify-center"
+                  title="Dashboard de Administración"
+                >
+                  <span className="material-symbols-outlined text-[24px]">settings</span>
+                </button>
               </div>
             </div>
           </div>

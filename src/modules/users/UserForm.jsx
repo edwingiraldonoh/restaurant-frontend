@@ -13,7 +13,7 @@ const initialState = {
   email: "",
   password: "",
   confirmPassword: "",
-  role: "ADMIN",
+  role: "KITCHEN",
 };
 
 
