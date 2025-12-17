@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from '../context/AuthContext.jsx';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebaseConfig";
@@ -16,6 +16,15 @@ function Login() {
   const [resetLoading, setResetLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Protección: redirigir al inicio si se accede directamente por URL
+  useEffect(() => {
+    // Verificar si viene desde el botón Dashboard mediante state
+    if (!location.state || !location.state.fromDashboard) {
+      navigate('/', { replace: true });
+    }
+  }, [location, navigate]);
 
   const validateAllowedRole = (claims) => {
     // Aceptar role explícito o la claim boolean `admin` desde Firebase

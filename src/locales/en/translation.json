@@ -72,7 +72,8 @@
         "freshIngredientsDescription": "We source only the finest local and organic ingredients daily.",
         "madeWithLove": "Made with Love",
         "madeWithLoveDescription": "Every dish is prepared with passion and attention to detail.",
-        "reviewsDescription": "Read authentic reviews from our satisfied customers and discover why they love dining with us."
+        "reviewsDescription": "Read authentic reviews from our satisfied customers and discover why they love dining with us.",
+        "dashboardAccessDenied": "Access denied. Admin privileges required."
     },
     "kitchen": {
         "filterAll": "All",

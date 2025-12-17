@@ -17,7 +17,7 @@ function ProtectedRoute({ children, allowedRoles, requireAdmin }) {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      navigate('/login');
+      navigate('/');
     } else if (normalizedAllowedRoles && !normalizedAllowedRoles.includes(userRole)) {
       // Redirigir al cocinero a /kitchen si intenta acceder a rutas de admin
       if (userRole === 'KITCHEN') {
