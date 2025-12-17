@@ -127,7 +127,7 @@ function KitchenView() {
     <>
       <div
         key={i18n.language}
-        className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6"
+        className="min-h-screen bg-slate-950 p-3 sm:p-4 md:p-6 ml-64"
       >
         {/* Header Section */}
         <div className="max-w-7xl mx-auto mb-4 sm:mb-6 md:mb-8">
@@ -146,11 +146,11 @@ function KitchenView() {
           {loading && orders.length === 0 ? (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-              <p className="mt-4 text-gray-600">{t('kitchen.loadingOrders')}</p>
+              <p className="mt-4 text-gray-400">{t('kitchen.loadingOrders')}</p>
             </div>
           ) : orders.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">{t('kitchen.noOrdersFound')}</p>
+              <p className="text-gray-400 text-lg">{t('kitchen.noOrdersFound')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">

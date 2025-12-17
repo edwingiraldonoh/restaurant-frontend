@@ -143,26 +143,26 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-subtext-light dark:text-subtext-dark">{t('orderStatus.loading')}</p>
+          <p className="text-gray-400">{t('orderStatus.loading')}</p>
         </div>
       </div>
     );
   }
   if (error) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
-        <div className="text-red-600 dark:text-red-400 mb-2">
+      <div className="bg-red-900/20 border border-red-800 rounded-lg p-6 text-center">
+        <div className="text-red-400 mb-2">
           <span className="material-symbols-outlined text-5xl">error</span>
         </div>
-        <h3 className="text-red-800 dark:text-red-300 font-semibold text-lg mb-2">{t('orderStatus.error')}</h3>
-        <p className="text-red-600 dark:text-red-400">{error}</p>
+        <h3 className="text-red-300 font-semibold text-lg mb-2">{t('orderStatus.error')}</h3>
+        <p className="text-red-400">{error}</p>
       </div>
     );
   }
   if (!order) {
     return (
-      <div className="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-lg p-6 text-center">
-        <p className="text-subtext-light dark:text-subtext-dark">{t('orderStatus.notFound')}</p>
+      <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 text-center">
+        <p className="text-gray-400">{t('orderStatus.notFound')}</p>
       </div>
     );
   }
@@ -171,21 +171,21 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
   return (
     <>
       {/* Headline Text */}
-      <h1 className="text-center text-[32px] font-bold leading-tight tracking-tight text-text-light dark:text-text-dark">
+      <h1 className="text-center text-[32px] font-bold leading-tight tracking-tight text-white">
         {t('orderStatus.orderNumber', { id: displayOrderId })}
       </h1>
-      <p className="pt-1 text-center text-base font-normal leading-normal text-subtext-light dark:text-subtext-dark">
+      <p className="pt-1 text-center text-base font-normal leading-normal text-gray-400">
         {t('orderStatus.for', { name: customerName })}
       </p>
 
       {/* Estado cancelado */}
       {isCancelled && (
-        <div className="mt-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-center">
-          <div className="text-red-600 dark:text-red-400 mb-2">
+        <div className="mt-4 bg-red-900/20 border border-red-800 rounded-lg p-4 text-center">
+          <div className="text-red-400 mb-2">
             <span className="material-symbols-outlined text-5xl">cancel</span>
           </div>
-          <h3 className="text-red-800 dark:text-red-300 font-semibold text-lg">{t('orderStatus.cancelledTitle')}</h3>
-          <p className="text-red-600 dark:text-red-400 text-sm mt-1">
+          <h3 className="text-red-300 font-semibold text-lg">{t('orderStatus.cancelledTitle')}</h3>
+          <p className="text-red-400 text-sm mt-1">
             {t('orderStatus.cancelledText')}
           </p>
         </div>
@@ -193,37 +193,37 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
 
       {/* Timeline / Status Stepper */}
       {!isCancelled && (
-        <div className="mt-8 rounded-xl bg-card-light dark:bg-card-dark p-6 shadow-sm">
+        <div className="mt-8 rounded-xl bg-slate-800 p-6 shadow-xl">
           <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2">
             {/* Step 1: Order Received */}
             <div className="flex flex-col items-center gap-2 text-center">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white">
                 <span className="material-symbols-outlined">check</span>
               </div>
-              <p className="text-xs font-medium text-text-light dark:text-text-dark">{t('orderStatus.stepReceived')}</p>
+              <p className="text-xs font-medium text-white">{t('orderStatus.stepReceived')}</p>
             </div>
             {/* Connector 1 */}
-            <div className={`h-1 flex-grow rounded-full ${isBeingPrepared ? 'bg-primary' : 'bg-border-light dark:bg-border-dark'}`}></div>
+            <div className={`h-1 flex-grow rounded-full ${isBeingPrepared ? 'bg-primary' : 'bg-slate-700'}`}></div>
             {/* Step 2: Being Prepared */}
             <div className="flex flex-col items-center gap-2 text-center">
-              <div className={`relative flex h-10 w-10 items-center justify-center rounded-full ${isBeingPrepared ? 'bg-primary text-white' : 'bg-border-light dark:bg-border-dark text-subtext-light dark:text-subtext-dark'}`}>
+              <div className={`relative flex h-10 w-10 items-center justify-center rounded-full ${isBeingPrepared ? 'bg-primary text-white' : 'bg-slate-700 text-gray-400'}`}>
                 <span className="material-symbols-outlined">{isReadyForPickup ? 'check' : 'soup_kitchen'}</span>
                 {(order.status === 'cooking' || order.status === 'preparing') && (
                   <div className="absolute h-full w-full animate-ping rounded-full bg-primary opacity-50"></div>
                 )}
               </div>
-              <p className={`text-xs font-medium ${isBeingPrepared ? 'text-primary' : 'text-subtext-light dark:text-subtext-dark'}`}>
+              <p className={`text-xs font-medium ${isBeingPrepared ? 'text-primary' : 'text-gray-400'}`}>
                 {t('orderStatus.stepPreparing')}
               </p>
             </div>
             {/* Connector 2 */}
-            <div className={`h-1 flex-grow rounded-full ${isReadyForPickup ? 'bg-primary' : 'bg-border-light dark:bg-border-dark'}`}></div>
+            <div className={`h-1 flex-grow rounded-full ${isReadyForPickup ? 'bg-primary' : 'bg-slate-700'}`}></div>
             {/* Step 3: Ready for Pickup */}
             <div className="flex flex-col items-center gap-2 text-center">
-              <div className={`flex h-10 w-10 items-center justify-center rounded-full ${isReadyForPickup ? 'bg-primary text-white' : 'bg-border-light dark:bg-border-dark text-subtext-light dark:text-subtext-dark'}`}>
+              <div className={`flex h-10 w-10 items-center justify-center rounded-full ${isReadyForPickup ? 'bg-primary text-white' : 'bg-slate-700 text-gray-400'}`}>
                 <span className="material-symbols-outlined">{isReadyForPickup ? 'check' : 'shopping_bag'}</span>
               </div>
-              <p className={`text-xs font-medium ${isReadyForPickup ? 'text-primary' : 'text-subtext-light dark:text-subtext-dark'}`}>
+              <p className={`text-xs font-medium ${isReadyForPickup ? 'text-primary' : 'text-gray-400'}`}>
                 {t('orderStatus.stepReady')}
               </p>
             </div>
@@ -232,7 +232,7 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
       )}
 
       {/* Section Header */}
-      <h3 className="px-0 pb-2 pt-8 text-lg font-bold leading-tight tracking-[-0.015em] text-text-light dark:text-text-dark">
+      <h3 className="px-0 pb-2 pt-8 text-lg font-bold leading-tight tracking-[-0.015em] text-white">
         {t('orderStatus.yourOrder')}
       </h3>
 
@@ -242,21 +242,21 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
           {order.items.map((item, index) => (
             <div
               key={index}
-              className="flex items-center gap-4 rounded-lg bg-card-light dark:bg-card-dark p-4 shadow-sm"
+              className="flex items-center gap-4 rounded-lg bg-slate-800 p-4 shadow-xl"
             >
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary">
                 <span className="material-symbols-outlined text-3xl">{getItemIcon(item.name)}</span>
               </div>
               <div className="flex-grow">
-                <p className="font-semibold text-text-light dark:text-text-dark">
+                <p className="font-semibold text-white">
                   {item.quantity}x {item.name}
                 </p>
                 {item.notes && (
-                  <p className="text-sm text-subtext-light dark:text-subtext-dark">{item.notes}</p>
+                  <p className="text-sm text-gray-400">{item.notes}</p>
                 )}
               </div>
               {item.price && (
-                <p className="font-bold text-text-light dark:text-text-dark">
+                <p className="font-bold text-white">
                   ${item.price.toFixed(2)}
                 </p>
               )}
@@ -264,8 +264,8 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
           ))}
         </div>
       ) : (
-        <div className="rounded-lg bg-card-light dark:bg-card-dark p-4 shadow-sm">
-          <p className="text-subtext-light dark:text-subtext-dark text-center">{t('orderStatus.noItems')}</p>
+        <div className="rounded-lg bg-slate-800 p-4 shadow-xl">
+          <p className="text-gray-400 text-center">{t('orderStatus.noItems')}</p>
         </div>
       )}
 
@@ -285,7 +285,7 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
       {/* Mensaje informativo para otros estados */}
       {order.status !== 'pending' && !isCancelled && (
         <div className="mt-6 flex justify-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-400">
             {order.status === 'cooking' ? t('orderStatus.infoPreparing') : ''}
             {order.status === 'ready' ? t('orderStatus.infoReady') : ''}
             {order.status === 'delivered' ? t('orderStatus.infoDelivered') : ''}
