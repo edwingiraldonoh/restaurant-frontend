@@ -8,16 +8,25 @@ const SessionAlert = () => {
   const [alertType, setAlertType] = useState('info'); // 'info', 'warning', 'error'
 
   useEffect(() => {
+    // Rutas públicas que no requieren autenticación
+    const publicRoutes = ['/', '/order', '/orders', '/login'];
+    
     // Listener para cambios en el estado de autenticación
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user && window.location.pathname !== '/login') {
+      const currentPath = window.location.pathname;
+      const isPublicRoute = publicRoutes.some(route => 
+        currentPath === route || currentPath.startsWith(route + '/')
+      );
+      
+      // Solo mostrar alerta si no hay usuario Y estamos en una ruta protegida
+      if (!user && !isPublicRoute) {
         setMessage('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
         setAlertType('error');
         setShowAlert(true);
         
-        // Redirigir al login después de 3 segundos
+        // Redirigir al home después de 3 segundos (no al login)
         setTimeout(() => {
-          window.location.href = '/login';
+          window.location.href = '/';
         }, 3000);
       }
     });

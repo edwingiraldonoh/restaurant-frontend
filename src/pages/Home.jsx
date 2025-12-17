@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import SelectListbox from '../components/SelectListbox';
+import { useSession } from '../context/SessionContext';
 
 /**
  * Página principal - Landing page con diseño moderno y scroll completo
@@ -11,6 +12,7 @@ function Home() {
   const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
   const { t, i18n } = useTranslation();
+  const { user, isAdmin } = useSession();
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -24,6 +26,10 @@ function Home() {
 
   const handleLanguageChange = (e) => {
     i18n.changeLanguage(e.target.value);
+  };
+
+  const handleDashboardAccess = () => {
+    navigate('/login', { state: { fromDashboard: true } });
   };
 
   return (
@@ -55,6 +61,13 @@ function Home() {
                     options={[{ value: 'en', label: 'English' }, { value: 'es', label: 'Español' }]}
                   />
                 </div>
+                <button
+                  onClick={handleDashboardAccess}
+                  className="bg-slate-700 text-white p-2.5 rounded-lg hover:bg-slate-600 transition-all flex items-center justify-center"
+                  title="Dashboard de Administración"
+                >
+                  <span className="material-symbols-outlined text-[24px]">settings</span>
+                </button>
               </div>
             </div>
           </div>

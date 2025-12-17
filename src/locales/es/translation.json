@@ -71,7 +71,8 @@
     "freshIngredientsDescription": "Seleccionamos solo los mejores ingredientes locales y orgánicos cada día.",
     "madeWithLove": "Hecho con amor",
     "madeWithLoveDescription": "Cada plato se prepara con pasión y atención al detalle.",
-    "reviewsDescription": "Lee reseñas auténticas de nuestros clientes satisfechos y descubre por qué les encanta comer con nosotros."
+    "reviewsDescription": "Lee reseñas auténticas de nuestros clientes satisfechos y descubre por qué les encanta comer con nosotros.",
+    "dashboardAccessDenied": "Acceso denegado. Se requieren privilegios de administrador."
   },
   "kitchen": {
     "filterAll": "Todos",

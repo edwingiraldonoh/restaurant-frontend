@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from '../context/AuthContext.jsx';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebaseConfig";
@@ -16,6 +16,15 @@ function Login() {
   const [resetLoading, setResetLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Protección: redirigir al inicio si se accede directamente por URL
+  useEffect(() => {
+    // Verificar si viene desde el botón Dashboard mediante state
+    if (!location.state || !location.state.fromDashboard) {
+      navigate('/', { replace: true });
+    }
+  }, [location, navigate]);
 
   const validateAllowedRole = (claims) => {
     // Aceptar role explícito o la claim boolean `admin` desde Firebase
@@ -26,7 +35,27 @@ function Login() {
 
   const handleAuthError = (error) => {
     console.error("Authentication error:", error);
-    setError("Credenciales inválidas o error de autenticación.");
+    
+    // Mensajes de error claros según el tipo de error de Firebase
+    let errorMessage = "Error de autenticación. Por favor intenta nuevamente.";
+    
+    if (error.code === 'auth/user-not-found') {
+      errorMessage = "No existe una cuenta con este correo electrónico.";
+    } else if (error.code === 'auth/wrong-password') {
+      errorMessage = "Contraseña incorrecta. Por favor verifica tus credenciales.";
+    } else if (error.code === 'auth/invalid-email') {
+      errorMessage = "El formato del correo electrónico es inválido.";
+    } else if (error.code === 'auth/user-disabled') {
+      errorMessage = "Esta cuenta ha sido desactivada. Contacta al administrador.";
+    } else if (error.code === 'auth/too-many-requests') {
+      errorMessage = "Demasiados intentos fallidos. Por favor intenta más tarde.";
+    } else if (error.code === 'auth/network-request-failed') {
+      errorMessage = "Error de conexión. Verifica tu conexión a internet.";
+    } else if (error.code === 'auth/invalid-credential') {
+      errorMessage = "Credenciales inválidas. Verifica tu correo y contraseña.";
+    }
+    
+    setError(errorMessage);
   };
 
   const handleUnauthorizedAccess = (claims) => {
