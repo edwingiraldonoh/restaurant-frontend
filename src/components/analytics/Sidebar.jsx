@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext.jsx';
+import SelectListbox from '../SelectListbox';
 
 /**
  * Componente de navegación lateral (Sidebar)
@@ -90,14 +91,13 @@ function Sidebar() {
           </div>
           <button className="flex items-center gap-3 px-3 py-2 hover:bg-slate-800 rounded-lg transition-all">
                <span className="material-symbols-outlined text-2xl text-white">language</span>
-            <select
-              value={i18n.language}
-              onChange={handleLanguageChange}
-              className="bg-primary text-white font-semibold px-4 py-1 rounded-lg hover:bg-primary/90 transition-all"
-            >
-              <option value="en">EN</option>
-              <option value="es">ES</option>
-            </select>
+            <div className="w-20">
+              <SelectListbox
+                value={i18n.language}
+                onChange={(v) => handleLanguageChange({ target: { value: v } })}
+                options={[{ value: 'en', label: 'EN' }, { value: 'es', label: 'ES' }]}
+              />
+            </div>
           </button>
           <button
             onClick={() => navigate('/')}

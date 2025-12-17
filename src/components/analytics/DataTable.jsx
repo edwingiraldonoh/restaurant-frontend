@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import SelectListbox from '../SelectListbox';
 import PropTypes from 'prop-types';
 
 /**
@@ -52,21 +53,12 @@ function DataTable({ data = [] }) {
               </th>
               <th className="px-6 py-3" scope="col">
                 <button
-                  onClick={() => handleSort('totalOrders')}
-                  className="flex items-center gap-1 hover:text-primary transition-colors"
-                >
-                  {t('analytics.totalOrders', 'Total Orders')} <span className="material-symbols-outlined text-base">swap_vert</span>
-                </button>
-              </th>
-              <th className="px-6 py-3" scope="col">
-                <button
                   onClick={() => handleSort('totalRevenue')}
                   className="flex items-center gap-1 hover:text-primary transition-colors"
                 >
                   {t('analytics.totalIncome', 'Total Income')} <span className="material-symbols-outlined text-base">swap_vert</span>
                 </button>
               </th>
-              <th className="px-6 py-3" scope="col">{t('analytics.productId', 'Product ID')}</th>
               <th className="px-6 py-3" scope="col">{t('analytics.productName', 'Product Name')}</th>
               <th className="px-6 py-3" scope="col">{t('analytics.quantity', 'Quantity')}</th>
             </tr>
@@ -74,7 +66,7 @@ function DataTable({ data = [] }) {
           <tbody>
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan="6" className="px-6 py-8 text-center text-gray-400">
+                <td colSpan="4" className="px-6 py-8 text-center text-gray-400">
                   {t('analytics.noTableData', 'No data is available for the selected period.')}
                 </td>
               </tr>
@@ -87,9 +79,7 @@ function DataTable({ data = [] }) {
                   <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
                     {row.period || 'N/A'}
                   </td>
-                  <td className="px-6 py-4">{row.totalOrders || 0}</td>
                   <td className="px-6 py-4">${Number(row.totalRevenue || 0).toLocaleString('es-CO')}</td>
-                  <td className="px-6 py-4">{row.productId || 'N/A'}</td>
                   <td className="px-6 py-4">{row.productName || 'N/A'}</td>
                   <td className="px-6 py-4">{row.quantity || 0}</td>
                 </tr>
@@ -103,18 +93,13 @@ function DataTable({ data = [] }) {
       <nav aria-label="Table navigation" className="flex items-center justify-between p-4">
         <div className="text-sm font-normal text-gray-400 flex items-center gap-2">
           {t('analytics.rowsPerPage', 'Rows per page:')}
-          <select
-            className="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg focus:ring-primary focus:border-primary p-1"
-            value={rowsPerPage}
-            onChange={(e) => {
-              setRowsPerPage(Number(e.target.value));
-              setCurrentPage(1);
-            }}
-          >
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-          </select>
+          <div className="w-24">
+            <SelectListbox
+              value={String(rowsPerPage)}
+              onChange={(v) => { setRowsPerPage(Number(v)); setCurrentPage(1); }}
+              options={[{ value: '10', label: '10' }, { value: '20', label: '20' }, { value: '50', label: '50' }]}
+            />
+          </div>
         </div>
         <ul className="inline-flex items-center -space-x-px">
           <li>

@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import SelectListbox from '../components/SelectListbox';
 
 /**
  * Página principal - Landing page con diseño moderno y scroll completo
@@ -47,14 +48,13 @@ function Home() {
                 >
                   {t('home.orderNow')}
                 </button>
-                <select
-                  value={i18n.language}
-                  onChange={handleLanguageChange}
-                  className="bg-primary text-white font-semibold px-6 py-2 rounded-lg hover:bg-primary/90 transition-all"
-                >
-                  <option value="en">English</option>
-                  <option value="es">Español</option>
-                </select>
+                <div className="w-36">
+                  <SelectListbox
+                    value={i18n.language}
+                    onChange={(v) => handleLanguageChange({ target: { value: v } })}
+                    options={[{ value: 'en', label: 'English' }, { value: 'es', label: 'Español' }]}
+                  />
+                </div>
               </div>
             </div>
           </div>

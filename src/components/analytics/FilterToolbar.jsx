@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
+import SelectListbox from '../SelectListbox';
 
 /**
  * Componente de barra de herramientas con filtros
- * Permite seleccionar rango de fechas, agrupación y exportar CSV
+ * Permite seleccionar rango de fechas, agrupación y exportar XLSX
  */
-function FilterToolbar({ filters, onFilterChange, onQuery, onExport, loading }) {
+function FilterToolbar({ filters, onFilterChange, onQuery, onExportXLSX, loading }) {
   const { t } = useTranslation();
   const handleInputChange = (field, value) => {
     onFilterChange({ [field]: value });
@@ -59,29 +60,30 @@ function FilterToolbar({ filters, onFilterChange, onQuery, onExport, loading }) 
           >
             {t('analytics.groupBy', 'Group by')}
           </label>
-          <select
-            className="w-full mt-1 pl-3 pr-10 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm text-white focus:ring-primary focus:border-primary"
-            id="group-by"
-            value={filters.groupBy}
-            onChange={(e) => handleInputChange('groupBy', e.target.value)}
-          >
-            <option value="day">{t('analytics.day', 'Day')}</option>
-            <option value="week">{t('analytics.week', 'Week')}</option>
-            <option value="month">{t('analytics.month', 'Month')}</option>
-            <option value="year">{t('analytics.year', 'Year')}</option>
-          </select>
+          <div className="w-44 mt-1">
+            <SelectListbox
+              value={filters.groupBy}
+              onChange={(v) => handleInputChange('groupBy', v)}
+              options={[
+                { value: 'day', label: t('analytics.day', 'Day') },
+                { value: 'week', label: t('analytics.week', 'Week') },
+                { value: 'month', label: t('analytics.month', 'Month') },
+                { value: 'year', label: t('analytics.year', 'Year') },
+              ]}
+            />
+          </div>
         </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex gap-2">
         <button
-          onClick={onExport}
+          onClick={onExportXLSX}
           disabled={loading}
-          className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-transparent text-white border border-slate-700 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-green-600 text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-4 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
-          <span className="material-symbols-outlined text-xl">ios_share</span>
-          <span className="truncate">{t('analytics.exportCsv', 'Export CSV')}</span>
+          <span className="material-symbols-outlined text-xl">table_view</span>
+          <span className="truncate">{t('analytics.exportXlsx', 'Export XLSX')}</span>
         </button>
         <button
           onClick={onQuery}
@@ -105,7 +107,7 @@ FilterToolbar.propTypes = {
   }).isRequired,
   onFilterChange: PropTypes.func.isRequired,
   onQuery: PropTypes.func.isRequired,
-  onExport: PropTypes.func.isRequired,
+  onExportXLSX: PropTypes.func.isRequired,
   loading: PropTypes.bool
 };
 

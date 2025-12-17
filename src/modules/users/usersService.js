@@ -20,7 +20,40 @@ export async function getUsers(params) {
       return { users: [], total: 0 };
     }
 
-    // Simulamos una respuesta con el usuario actual
+    // Obtener el token actual con customClaims frescos
+    const tokenResult = await currentUser.getIdTokenResult(true); // true para forzar refresh
+    const customClaims = tokenResult.claims;
+    
+    console.log('CustomClaims obtenidos:', customClaims);
+
+    // Si el usuario tiene claim admin o role ADMIN, intentar obtener la lista completa desde el backend admin
+    const isAdmin = (customClaims.admin || (customClaims.role && String(customClaims.role).toUpperCase() === 'ADMIN'));
+    
+    if (isAdmin) {
+      try {
+        const adminApiUrl = (import.meta && import.meta.env && import.meta.env.VITE_ADMIN_API_URL) ? import.meta.env.VITE_ADMIN_API_URL : 'http://localhost:4001';
+        // API key opcional almacenada en localStorage bajo 'adminApiKey'
+        const apiKey = localStorage.getItem('adminApiKey') || 'changeme';
+        const res = await fetch(`${adminApiUrl.replace(/\/$/, '')}/list-users`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey
+          }
+        });
+        if (!res.ok) {
+          console.warn('Admin API returned', res.status);
+        } else {
+          const body = await res.json();
+          const data = body.users || [];
+          return { users: Array.isArray(data) ? data : [], total: Array.isArray(data) ? data.length : 0 };
+        }
+      } catch (err) {
+        console.error('Error fetching admin user list:', err);
+        // continuar con fallback al usuario actual
+      }
+    }
+
+    // Fallback: retornar únicamente el usuario actual (simulado)
     const users = [{
       uid: currentUser.uid,
       email: currentUser.email,
@@ -31,10 +64,11 @@ export async function getUsers(params) {
       status: 'Active', // Estado del usuario
       createdAt: currentUser.metadata.creationTime,
       lastLoginAt: currentUser.metadata.lastSignInTime,
-      role: 'admin' // Por defecto asumimos admin
+      // Incluir customClaims frescos del token
+      customClaims: customClaims,
+      role: customClaims.admin ? 'ADMIN' : (customClaims.role ? String(customClaims.role).toUpperCase() : '')
     }];
 
-    // Retornar en formato compatible con el componente
     return { users, total: users.length };
   } catch (error) {
     console.error('Error al obtener usuarios:', error);
@@ -45,7 +79,8 @@ export async function getUsers(params) {
 // Crear nuevo usuario
 export async function createUser(data) {
   try {
-    const { email, password, displayName, role } = data;
+    const { email, password, role } = data;
+    const displayName = data.displayName || data.name || '';
     
     // Crear usuario en Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -87,14 +122,31 @@ export async function updateUser(uid, data) {
       throw new Error('No tienes permisos para actualizar este usuario');
     }
 
-    const { displayName, photoURL } = data;
-    await updateProfile(currentUser, { displayName, photoURL });
+    const { displayName, photoURL, role } = data;
+    
+    // Actualizar el perfil del usuario
+    const updateData = {};
+    if (displayName !== undefined) updateData.displayName = displayName;
+    if (photoURL !== undefined) updateData.photoURL = photoURL;
+    
+    if (Object.keys(updateData).length > 0) {
+      await updateProfile(currentUser, updateData);
+    }
+
+    // Forzar refresh del token para obtener los datos actualizados
+    await currentUser.reload();
+    
+    // Obtener customClaims actualizados
+    const tokenResult = await currentUser.getIdTokenResult(true);
+    const customClaims = tokenResult.claims;
 
     return {
       uid: currentUser.uid,
       email: currentUser.email,
       displayName: currentUser.displayName,
-      photoURL: currentUser.photoURL
+      photoURL: currentUser.photoURL,
+      customClaims: customClaims,
+      role: customClaims.admin ? 'ADMIN' : (customClaims.role ? String(customClaims.role).toUpperCase() : '')
     };
   } catch (error) {
     console.error('Error al actualizar usuario:', error);
