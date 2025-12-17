@@ -6,7 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 
 function ProtectedRoute({ children, allowedRoles, requireAdmin }) {
   const navigate = useNavigate();
-  const { isLoggedIn, user } = useContext(AuthContext);
+  const { isLoggedIn, user, loading } = useContext(AuthContext);
 
   // Si requireAdmin es true, solo permitir ADMIN
   const rolesPermitidos = requireAdmin ? ['ADMIN'] : allowedRoles;
@@ -16,6 +16,9 @@ function ProtectedRoute({ children, allowedRoles, requireAdmin }) {
   const userRole = (user?.role || '').toUpperCase();
 
   useEffect(() => {
+    // No hacer nada mientras está cargando la sesión
+    if (loading) return;
+
     if (!isLoggedIn) {
       navigate('/');
     } else if (normalizedAllowedRoles && !normalizedAllowedRoles.includes(userRole)) {
@@ -26,7 +29,19 @@ function ProtectedRoute({ children, allowedRoles, requireAdmin }) {
         navigate('/');
       }
     }
-  }, [isLoggedIn, userRole, normalizedAllowedRoles, navigate]);
+  }, [isLoggedIn, userRole, normalizedAllowedRoles, navigate, loading]);
+
+  // Mostrar loading mientras verifica la sesión
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-400">Verificando sesión...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isLoggedIn) return null;
   if (normalizedAllowedRoles && !normalizedAllowedRoles.includes(userRole)) return null;

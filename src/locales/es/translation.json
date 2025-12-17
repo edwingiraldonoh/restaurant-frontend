@@ -35,7 +35,13 @@
     "readyTitle": "¡Pedido listo!",
     "readyMessage": "Tu pedido está listo para recoger.",
     "pickUpOrder": "Recoger pedido",
-    "addReview": "Agregar reseña"
+    "addReview": "Agregar reseña",
+    "modifyOrder": "Modificar Pedido",
+    "cannotModifyPreparing": "No se puede modificar el pedido porque ya está en preparación",
+    "cannotCancelPreparing": "No se puede cancelar el pedido porque ya está en preparación",
+    "infoPreparing": "Tu pedido está siendo preparado. No se pueden realizar cambios.",
+    "infoReady": "Tu pedido está listo para recoger.",
+    "infoDelivered": "Tu pedido ha sido entregado."
   },
   "notification": {
     "defaultTitle": "Notificación",
@@ -79,16 +85,26 @@
     "filterReceived": "Recibidos",
     "filterPreparing": "En preparación",
     "filterReady": "Listos",
+    "filterCancelled": "Cancelados",
     "orderNumber": "Pedido #",
     "completed": "Completado",
     "statusReceived": "Nuevo pedido",
     "statusPreparing": "En cocina",
     "statusReady": "Listo",
+    "statusCancelled": "Cancelado",
     "processing": "Procesando...",
     "startCooking": "Comenzar a cocinar",
     "markAsReady": "Marcar como listo",
     "timeMinutesAgo": "hace {{count}} min",
-    "timeSecondsAgo": "hace {{count}} seg"
+    "timeSecondsAgo": "hace {{count}} seg",
+    "newOrderTitle": "Nuevo pedido recibido",
+    "newOrderMessage": "Has recibido un nuevo pedido: {{order}}",
+    "viewOrder": "Ver pedido",
+    "errorLoadingOrders": "Error al cargar pedidos",
+    "endpointNotFound": "No se encontró el endpoint",
+    "serverConnectionError": "Error de conexión con el servidor",
+    "noOrdersFound": "No se encontraron pedidos",
+    "loadingOrders": "Cargando pedidos..."
   },
   "sidebar": {
     "userManagement": "Panel de administración",

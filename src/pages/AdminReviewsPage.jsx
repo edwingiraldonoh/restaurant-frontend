@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import StarRating from '../components/StarRating';
 import Sidebar from '../components/analytics/Sidebar';
 import { useTranslation } from 'react-i18next';
+import { updateReviewStatus } from '../services/api';
 
 /**
  * AdminReviewsPage Component
@@ -93,20 +94,7 @@ const AdminReviewsPage = () => {
     }
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/reviews/${reviewId}/status`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Error al actualizar la reseña');
-      }
+      await updateReviewStatus(reviewId, newStatus);
 
       // Update local state
       setReviews((prev) =>

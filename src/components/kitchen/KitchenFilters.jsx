@@ -10,6 +10,7 @@ function KitchenFilters({ filter, onFilterChange }) {
     { value: 'RECEIVED', label: t('kitchen.filterReceived') },
     { value: 'PREPARING', label: t('kitchen.filterPreparing') },
     { value: 'READY', label: t('kitchen.filterReady') },
+    { value: 'CANCELLED', label: t('kitchen.filterCancelled') },
   ];
 
   return (
