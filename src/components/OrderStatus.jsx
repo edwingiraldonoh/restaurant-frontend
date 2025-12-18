@@ -171,6 +171,11 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
   // --- Memoización de datos derivados ---
   const displayOrderId = useMemo(() => order?.orderNumber || order?.orderId || order?._id || 'N/A', [order]);
   const customerName = useMemo(() => order?.customerName || order?.customer || 'Customer', [order]);
+  // Estados del timeline alineados con el proceso de cocina:
+  // - Received: pedido creado (pending o posterior)
+  // - Preparing: en preparación (preparing o posterior)
+  // - Ready: listo para recoger (ready o delivered)
+  const isReceived = useMemo(() => ['pending', 'preparing', 'ready', 'delivered'].includes(order?.status), [order]);
   const isBeingPrepared = useMemo(() => ['preparing', 'ready', 'delivered'].includes(order?.status), [order]);
   const isReadyForPickup = useMemo(() => ['ready', 'delivered'].includes(order?.status), [order]);
   const isCancelled = order?.status === 'cancelled';
@@ -235,10 +240,14 @@ function OrderStatus({ onOrderLoad, onRefreshRequest, onOpenReviewModal }) {
           <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2">
             {/* Step 1: Order Received */}
             <div className="flex flex-col items-center gap-2 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white">
-                <span className="material-symbols-outlined">check</span>
+              <div className={`flex h-10 w-10 items-center justify-center rounded-full ${isReceived ? 'bg-primary text-white' : 'bg-slate-700 text-gray-400'}`}>
+                <span className="material-symbols-outlined">
+                  {isBeingPrepared ? 'check' : (order.status === 'pending' ? 'receipt_long' : 'receipt_long')}
+                </span>
               </div>
-              <p className="text-xs font-medium text-white">{t('orderStatus.stepReceived')}</p>
+              <p className={`text-xs font-medium ${isReceived ? 'text-white' : 'text-gray-400'}`}>
+                {t('orderStatus.stepReceived')}
+              </p>
             </div>
             {/* Connector 1 */}
             <div className={`h-1 flex-grow rounded-full ${isBeingPrepared ? 'bg-primary' : 'bg-slate-700'}`}></div>

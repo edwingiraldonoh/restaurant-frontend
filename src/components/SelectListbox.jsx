@@ -62,7 +62,7 @@ export default function SelectListbox({ value, onChange, options = [], className
       >
         <div className="flex items-center gap-2">
           {selected?.leftIcon && <span className="flex-shrink-0">{selected.leftIcon}</span>}
-          <span className="block truncate">{selected?.label || label}</span>
+          <span className="block truncate text-white">{selected?.label || label}</span>
         </div>
         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
           <svg className="h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

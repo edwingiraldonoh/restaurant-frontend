@@ -59,6 +59,7 @@ function Home() {
                     value={i18n.language}
                     onChange={(v) => handleLanguageChange({ target: { value: v } })}
                     options={[{ value: 'en', label: 'English' }, { value: 'es', label: 'Español' }]}
+                    className="text-white"
                   />
                 </div>
                 <button
@@ -66,7 +67,7 @@ function Home() {
                   className="bg-slate-700 text-white p-2.5 rounded-lg hover:bg-slate-600 transition-all flex items-center justify-center"
                   title="Dashboard de Administración"
                 >
-                  <span className="material-symbols-outlined text-[24px]">settings</span>
+                  <span className="material-symbols-outlined text-[24px] text-white">settings</span>
                 </button>
               </div>
             </div>
